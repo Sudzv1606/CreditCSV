@@ -141,11 +141,12 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
         console.log('Signup successful:', authData);
 
         if (authData.user) {
+            // Create profile with user_id instead of id
             const { error: profileError } = await supabase
                 .from('profiles')
                 .insert([
                     {
-                        id: authData.user.id,
+                        user_id: authData.user.id,  // Changed from id to user_id
                         full_name: name,
                         email: email
                     }
@@ -155,6 +156,7 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
             
             console.log('Profile created successfully');
 
+            // Redirect based on email verification status
             if (authData.user.confirmationSentAt) {
                 window.location.href = '/email-verification.html';
             } else {
@@ -170,6 +172,7 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
 
 // You can call this function on page load
 document.addEventListener('DOMContentLoaded', checkAuthStatus);
+
 
 
 
