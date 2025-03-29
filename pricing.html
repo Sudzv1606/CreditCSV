@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - CreditCSV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="/" class="logo">
+                <span class="logo-icon">📄</span>
+                CreditCSV
+            </a>
+            <div class="nav-links">
+                <a href="pricing.html" class="active">Pricing</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html" class="signup-btn">Register</a>
+                <a href="index.html#convert" class="convert-btn">Convert Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main pricing-page">
+        <section class="pricing-hero">
+            <div class="container">
+                <h1>Simple, Transparent Pricing</h1>
+                <p>Choose the plan that works best for you</p>
+            </div>
+        </section>
+
+        <section class="pricing-grid container">
+            <div class="pricing-card">
+                <div class="card-header">
+                    <h2>Free</h2>
+                    <div class="price">
+                        <span class="amount">$0</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p>Perfect for occasional use</p>
+                </div>
+                <ul class="features">
+                    <li>✓ Up to 10 pages per month</li>
+                    <li>✓ Basic format support</li>
+                    <li>✓ Standard conversion speed</li>
+                    <li>✓ Email support</li>
+                </ul>
+                <a href="index.html#convert" class="cta-button secondary">Start Free</a>
+            </div>
+
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="card-header">
+                    <h2>Premium</h2>
+                    <div class="price">
+                        <span class="amount">$12</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p>For power users</p>
+                </div>
+                <ul class="features">
+                    <li>✓ Unlimited conversions</li>
+                    <li>✓ All formats supported</li>
+                    <li>✓ Priority conversion speed</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Batch processing</li>
+                </ul>
+                <a href="#" class="cta-button primary" id="goPremiumBtn">Go Premium</a>
+                <p class="annual-save">Save 31% with annual billing</p>
+            </div>
+        </section>
+
+        <section class="pricing-faq container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Can I cancel anytime?</h3>
+                    <p>Yes, you can cancel your subscription at any time. No questions asked.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What payment methods do you accept?</h3>
+                    <p>We accept all major credit cards, PayPal, and Google Pay.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="/" class="footer-logo">
+                        <span class="logo-icon">📄</span>
+                        CreditCSV
+                    </a>
+                    <p>Convert credit card PDF statements to CSV format securely in your browser.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="index.html#how-it-works">How It Works</a>
+                        <a href="index.html#convert">Convert Now</a>
+                        <a href="pricing.html">Pricing</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <a href="index.html#faq">FAQ</a>
+                        <a href="#">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 CreditCSV. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize supabase-js
+        const { createClient } = supabase;
+    </script>
+    <script src="scripts/supabase.js"></script>
+    <script src="scripts/pricing.js"></script>
+</body>
+</html>
