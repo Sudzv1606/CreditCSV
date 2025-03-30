@@ -1,3 +1,5 @@
+const BASE_URL = 'https://sudzv1606.github.io';
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         // First check if we have a session
@@ -7,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (!session) {
             console.log('No session found');
-            window.location.href = '/login.html';
+            window.location.href = `${BASE_URL}/login.html`;
             return;
         }
 
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (error || !user) {
             console.log('No authenticated user found');
-            window.location.href = '/login.html';
+            window.location.href = `${BASE_URL}/login.html`;
             return;
         }
 
@@ -45,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             .subscribe();
     } catch (error) {
         console.error('Dashboard initialization error:', error);
-        window.location.href = '/login.html';
+        window.location.href = `${BASE_URL}/login.html`;
     }
 });
 
@@ -120,18 +122,19 @@ function initializeUserMenu(user) {
 }
 
 // Handle upgrade button click
-document.getElementById('upgradeBtn').addEventListener('click', () => {
-    window.location.href = '/checkout.html';
+document.getElementById('upgradeBtn')?.addEventListener('click', () => {
+    window.location.href = `${BASE_URL}/checkout.html`;
 });
 
 // Handle resume checkout button click
 document.getElementById('resumeCheckoutBtn')?.addEventListener('click', () => {
-    window.location.href = '/checkout.html';
+    window.location.href = `${BASE_URL}/checkout.html`;
     localStorage.removeItem('abandonedCheckout');
 });
 
 // Make updateUsageStats available globally
 window.updateUsageStats = updateUsageStats;
+
 
 
 

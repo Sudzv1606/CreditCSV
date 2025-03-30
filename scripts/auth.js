@@ -1,3 +1,5 @@
+const BASE_URL = 'https://sudzv1606.github.io';
+
 function getRedirectUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('redirect') === 'pricing' ? '/pricing.html' : '/dashboard.html';
@@ -25,8 +27,8 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         // Store user data
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Redirect to dashboard
-        window.location.href = '/dashboard.html';
+        // Redirect to dashboard with full URL
+        window.location.href = `${BASE_URL}/dashboard.html`;
         
     } catch (error) {
         console.error('Login error:', error);
@@ -77,8 +79,8 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
             // Store user data
             localStorage.setItem('user', JSON.stringify(authData.user));
             
-            // Redirect to dashboard
-            window.location.href = '/dashboard.html';
+            // Redirect to dashboard with full URL
+            window.location.href = `${BASE_URL}/dashboard.html`;
         }
     } catch (error) {
         console.error('Signup error:', error);
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // If user is already logged in and on login/signup page, redirect to dashboard
         if (window.location.pathname.includes('/login.html') || 
             window.location.pathname.includes('/signup.html')) {
-            window.location.href = '/dashboard.html';
+            window.location.href = `${BASE_URL}/dashboard.html`;
         }
     }
 });
@@ -106,53 +108,12 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     
     if (event === 'SIGNED_IN') {
         console.log('User signed in:', session.user);
-        
-        try {
-            // Try to create profile if it doesn't exist
-            const { data: existingProfile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('user_id', session.user.id)
-                .single();
-                
-            if (!existingProfile) {
-                const userData = JSON.parse(localStorage.getItem('pendingUserData') || '{}');
-                if (userData.full_name) {
-                    const { error: profileError } = await supabase
-                        .from('profiles')
-                        .insert([
-                            {
-                                user_id: session.user.id,
-                                full_name: userData.full_name,
-                                email: userData.email
-                            }
-                        ]);
-                        
-                    if (!profileError) {
-                        localStorage.removeItem('pendingUserData');
-                    }
-                }
-            }
-            
-            localStorage.setItem('user', JSON.stringify(session.user));
-            
-            // Only redirect if on auth pages
-            if (window.location.pathname.includes('/login.html') || 
-                window.location.pathname.includes('/signup.html')) {
-                window.location.href = getRedirectUrl();
-            }
-        } catch (error) {
-            console.error('Error during auth state change:', error);
-        }
+        window.location.href = `${BASE_URL}/dashboard.html`;
     } else if (event === 'SIGNED_OUT') {
         console.log('User signed out');
         localStorage.removeItem('user');
         localStorage.removeItem('pendingUserData');
-        
-        // Redirect to login page if on protected pages
-        if (window.location.pathname.includes('/dashboard.html')) {
-            window.location.href = '/login.html';
-        }
+        window.location.href = `${BASE_URL}/login.html`;
     }
 });
 
@@ -160,6 +121,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
+
 
 
 
