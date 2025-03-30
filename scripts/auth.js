@@ -155,6 +155,8 @@ function initializeAuth() {
             localStorage.removeItem('pendingUserData'); // Clear any pending data
             // Redirect to homepage after logout
             window.location.href = '/CreditCSV/index.html';
+        } else {
+            console.log('Auth state changed, but not a SIGNED_OUT event. Ignoring.');
         }
     });
 

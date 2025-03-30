@@ -257,9 +257,10 @@ function initializeUserMenu(user) {
         }
     });
 
-    // Close dropdown if clicked outside
+    // Close dropdown if clicked outside the user menu container
+    const userMenuContainer = document.querySelector('.user-menu-container');
     document.addEventListener('click', (event) => {
-        if (!userMenuBtn.contains(event.target) && !userDropdown.contains(event.target)) {
+        if (userMenuContainer && !userMenuContainer.contains(event.target)) {
             userDropdown.classList.remove('show');
         }
     });
