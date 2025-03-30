@@ -55,6 +55,24 @@ function initializeAuth() {
             errorMessage.style.display = 'none'; // Hide previous errors
 
             try {
+                // Check if a profile with this email already exists
+                const { data: existingProfile, error: existingProfileError } = await window.supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+
+                if (existingProfileError && existingProfileError.code !== 'PGRST116') {
+                    throw existingProfileError; // Re-throw if it's not a "no rows found" error
+                }
+
+                if (existingProfile) {
+                    // A profile with this email already exists
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'An account with this email already exists. Please try logging in or contact support.';
+                    return; // Stop signup process
+                }
+
                 console.log('Attempting signup for:', email);
                 const { data: authData, error: authError } = await window.supabase.auth.signUp({
                     email,
@@ -153,8 +171,12 @@ function initializeAuth() {
             console.log('User signed out');
             localStorage.removeItem('user');
             localStorage.removeItem('pendingUserData'); // Clear any pending data
-            // Redirect to homepage after logout
-            window.location.href = '/CreditCSV/index.html';
+            // Redirect to homepage after logout, but only if not already on the homepage
+            if (!window.location.pathname.endsWith('/CreditCSV/index.html')) {
+                window.location.href = '/CreditCSV/index.html';
+            } else {
+                console.log("Already on homepage, not redirecting.");
+            }
         } else {
             console.log('Auth state changed, but not a SIGNED_OUT event. Ignoring.');
         }
