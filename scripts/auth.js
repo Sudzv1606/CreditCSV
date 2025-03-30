@@ -147,12 +147,12 @@ function initializeAuth() {
         const isOnLoginPage = window.location.pathname.endsWith('/CreditCSV/login.html');
         const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
 
-
-        if (event === 'SIGNED_IN' && !isOnDashboardPage) {
+        // Add a check for session and user data before redirecting
+        if (event === 'SIGNED_IN' && session && session.user && !isOnDashboardPage) {
             console.log('User signed in, redirecting to dashboard.');
             window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
         } else if (event === 'SIGNED_OUT') {
-            console.log('User signed out, redirecting to login.');
+            console.log('User signed out');
             localStorage.removeItem('user');
             localStorage.removeItem('pendingUserData'); // Clear any pending data
             // Only redirect if not already on an auth page
