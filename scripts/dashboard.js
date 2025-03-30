@@ -1,4 +1,5 @@
-const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
+// Base URL is removed as we will use relative paths for navigation.
+// const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (!session) {
             console.log('No session found, redirecting to login');
-            window.location.href = `${BASE_URL}/login.html`;
+            window.location.href = '/login.html'; // Changed from BASE_URL
             return;
         }
 
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!user) {
             console.log('No authenticated user found');
-            window.location.href = `${BASE_URL}/login.html`;
+            window.location.href = '/login.html'; // Changed from BASE_URL
             return;
         }
 
@@ -49,8 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error('Dashboard initialization error:', error);
+        // Redirect to login on auth/session errors
         if (error.message?.includes('auth') || error.message?.includes('session')) {
-            window.location.href = `${BASE_URL}/login.html`;
+            window.location.href = '/login.html'; // Changed from BASE_URL
         }
     }
 });
@@ -110,38 +112,69 @@ function checkAbandonedCheckout() {
 }
 
 function initializeUserMenu(user) {
-    const userInitial = document.querySelector('.user-initial');
-    if (userInitial && user.email) {
-        userInitial.textContent = user.email[0].toUpperCase();
+    const userInitialElement = document.querySelector('.user-initial');
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    const userEmailDisplay = document.getElementById('userEmailDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!userInitialElement || !userMenuBtn || !userDropdown || !userEmailDisplay || !logoutBtn) {
+        console.error('User menu elements not found.');
+        return;
     }
-    
-    // Add dropdown menu
-    const userMenu = document.getElementById('userMenuBtn');
-    if (userMenu) {
-        userMenu.addEventListener('click', () => {
-            // Toggle dropdown menu
-            // Add your dropdown menu logic here
-        });
+
+    // Set user initial and email
+    if (user.email) {
+        userInitialElement.textContent = user.email[0].toUpperCase();
+        userEmailDisplay.textContent = user.email;
+    } else {
+        userInitialElement.textContent = '?'; // Fallback if email is missing
+        userEmailDisplay.textContent = 'No email found';
     }
+
+    // Toggle dropdown visibility
+    userMenuBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        userDropdown.classList.toggle('show');
+    });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            // onAuthStateChange listener in auth.js should handle the redirect
+            console.log('User logged out successfully.');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            alert('Logout failed. Please try again.');
+        }
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', (event) => {
+        if (!userMenuBtn.contains(event.target) && !userDropdown.contains(event.target)) {
+            userDropdown.classList.remove('show');
+        }
+    });
 }
 
 // Handle upgrade button click
 document.getElementById('upgradeBtn')?.addEventListener('click', () => {
-    window.location.href = `${BASE_URL}/checkout.html`;
+    // TODO: Implement checkout flow or redirect to pricing/signup
+    // window.location.href = '/checkout.html'; // Changed from BASE_URL - checkout.html does not exist
+    console.warn('Checkout page redirect disabled: checkout.html does not exist.');
+    alert('Checkout functionality is not yet implemented.'); // Placeholder feedback
 });
 
 // Handle resume checkout button click
 document.getElementById('resumeCheckoutBtn')?.addEventListener('click', () => {
-    window.location.href = `${BASE_URL}/checkout.html`;
+    // TODO: Implement checkout flow or redirect to pricing/signup
+    // window.location.href = '/checkout.html'; // Changed from BASE_URL - checkout.html does not exist
+    console.warn('Checkout page redirect disabled: checkout.html does not exist.');
+    alert('Checkout functionality is not yet implemented.'); // Placeholder feedback
     localStorage.removeItem('abandonedCheckout');
 });
 
 // Make updateUsageStats available globally
 window.updateUsageStats = updateUsageStats;
-
-
-
-
-
-
-

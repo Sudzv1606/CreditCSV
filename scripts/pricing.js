@@ -12,7 +12,8 @@ async function checkAuthStatus() {
     }
 }
 
-const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
+// Base URL is removed as we will use relative paths for navigation.
+// const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 // Handle premium subscription button click
 document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
@@ -21,7 +22,8 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
     await checkAuthStatus();
     
     if (!isAuthenticated) {
-        window.location.href = `${BASE_URL}/signup.html?redirect=pricing`;
+        // Redirect to signup using a relative path, keeping the redirect parameter
+        window.location.href = '/signup.html?redirect=pricing'; // Changed from BASE_URL
         return;
     }
 
@@ -44,8 +46,11 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
             return;
         }
 
-        // Redirect to checkout page
-        window.location.href = `${BASE_URL}/checkout.html`;
+        // Redirect to checkout page - THIS IS BROKEN as checkout.html doesn't exist
+        // TODO: Implement checkout flow or redirect appropriately
+        // window.location.href = '/checkout.html'; // Changed from BASE_URL
+        console.warn('Checkout page redirect disabled: checkout.html does not exist.');
+        alert('Checkout functionality is not yet implemented.'); // Placeholder feedback
 
     } catch (error) {
         console.error('Subscription check failed:', error);
@@ -55,4 +60,3 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
 
 // Run auth check when page loads
 checkAuthStatus();
-

@@ -1,6 +1,8 @@
 // Configuration
-const API_KEY = 'YOUR_API_KEY'; // Replace with your actual API key
-const API_ENDPOINT = 'https://api.cloudmersive.com/convert/pdf/to/csv';
+// IMPORTANT: API Key Management - The API key should NOT be stored here in client-side code.
+// This is a major security risk. A backend service is required to securely handle the API key and make API calls.
+// const API_KEY = 'YOUR_API_KEY'; // Replace with your actual API key - DO NOT UNCOMMENT IN FRONTEND
+const API_ENDPOINT = 'https://api.cloudmersive.com/convert/pdf/to/csv'; // This might also be handled by the backend
 
 // Create drop zone element but don't insert it yet
 const dropZone = document.createElement('div');
@@ -158,33 +160,42 @@ async function processFile(file) {
         isConverting = true;
         showConversionStatus();
 
-        // Convert PDF to CSV
-        const csvData = await convertPdfToCsv(file);
-        
+        // --- PDF Conversion Logic (Requires Backend Implementation) ---
+        // The following code attempts to call the Cloudmersive API directly from the frontend.
+        // This is insecure due to API key exposure. This functionality needs to be moved to a backend service.
+        // The frontend should securely send the file to your backend, which then calls the Cloudmersive API.
+
+        /*
+        // Convert PDF to CSV - THIS SHOULD BE DONE ON A BACKEND
+        const csvData = await convertPdfToCsv(file); // DO NOT CALL THIS FROM FRONTEND
+
         if (!csvData || csvData.trim() === '') {
             throw new Error('Conversion resulted in empty data');
         }
 
         // Create download link and trigger download
         downloadCsv(csvData, file.name.replace('.pdf', '.csv'));
-        
+
         // Update conversion count in database
         await updateConversionCount();
-        
+
         // Update dashboard if we're on the same domain
         updateDashboardStats();
-        
+
         // Clear sensitive data from memory
         clearSensitiveData(file, csvData);
-        
+
         showSuccess('Conversion successful! Your download should begin shortly.');
+        */
+
+        // Placeholder for demonstrating UI without actual conversion
+        console.warn("PDF conversion via frontend API call is disabled due to security risks. Backend implementation required.");
+        showError("PDF conversion is currently disabled. Backend implementation needed.");
+        // --- End of Backend Requirement Section ---
+
     } catch (error) {
-        console.error('Conversion error:', error);
-        showError(
-            error.message.includes('API') 
-                ? 'API error. Please try again later.' 
-                : 'Failed to convert PDF. Please ensure it\'s a valid credit card statement.'
-        );
+        console.error('Processing error:', error);
+        showError('Failed to process PDF. Please try again later.'); // Generic error as conversion is disabled
     } finally {
         isConverting = false;
         hideConversionStatus();
@@ -215,36 +226,51 @@ function clearSensitiveData(file, csvData) {
     }
 }
 
+// --- Backend Required Function ---
+// This function makes a direct call to the Cloudmersive API using a key stored in the frontend.
+// It MUST be removed or refactored to call your own backend service instead.
+/*
 async function convertPdfToCsv(file) {
     // Use FormData for secure transmission
     const formData = new FormData();
     formData.append('inputFile', file);
 
     try {
-        // Ensure HTTPS
+        // Ensure HTTPS - Good practice, but main issue is API key exposure
         if (!window.location.protocol.includes('https')) {
-            throw new Error('This application requires a secure HTTPS connection.');
+            // Consider allowing HTTP for local development if needed, but enforce HTTPS in production.
+            console.warn('Attempting API call over HTTP. This might fail and is insecure.');
+            // throw new Error('This application requires a secure HTTPS connection.');
         }
 
         const response = await fetch(API_ENDPOINT, {
             method: 'POST',
             headers: {
-                'Apikey': API_KEY,
-                'Secure-Transport': 'true'
+                // 'Apikey': API_KEY, // DO NOT INCLUDE API KEY HERE
+                'Secure-Transport': 'true' // Example header, check API docs
+                // Add any other required headers, potentially an auth token for *your* backend
             },
             body: formData
         });
 
         if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            // Provide more specific error feedback if possible
+            const errorBody = await response.text();
+            console.error("API Error Body:", errorBody);
+            throw new Error(`API error: ${response.status} - ${response.statusText}`);
         }
 
         const csvData = await response.text();
         return csvData;
     } catch (error) {
-        throw new Error('API error: ' + error.message);
+        // Log the specific error for debugging
+        console.error("convertPdfToCsv Error:", error);
+        throw new Error('API call failed: ' + error.message);
     }
 }
+*/
+// --- End of Backend Required Function ---
+
 
 function downloadCsv(csvData, filename) {
     try {

@@ -1,9 +1,14 @@
-const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
+// Base URL is removed as we will use relative paths for navigation.
+// const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
+// This function is unused and relies on the removed BASE_URL. Commenting out.
+/*
 function getRedirectUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('redirect') === 'pricing' ? `${BASE_URL}/pricing.html` : `${BASE_URL}/dashboard.html`;
+    // Using relative paths now
+    return urlParams.get('redirect') === 'pricing' ? '/pricing.html' : '/dashboard.html';
 }
+*/
 
 // Handle login form submission
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
@@ -26,10 +31,10 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         
         // Store user data
         localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Redirect to dashboard with correct URL
-        window.location.href = `${BASE_URL}/dashboard.html`;
-        
+
+        // Redirect to dashboard using a relative path
+        window.location.href = '/dashboard.html'; // Changed from BASE_URL
+
     } catch (error) {
         console.error('Login error:', error);
         errorMessage.style.display = 'block';
@@ -84,8 +89,8 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
             if (sessionError) throw sessionError;
             
             if (session) {
-                // Redirect to dashboard with correct URL
-                window.location.href = `${BASE_URL}/dashboard.html`;
+                // Redirect to dashboard using a relative path
+                window.location.href = '/dashboard.html'; // Changed from BASE_URL
             }
         }
     } catch (error) {
@@ -99,11 +104,19 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
 document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
+    // Determine the base path dynamically if needed, or assume root relative paths work.
+    // For GitHub Pages, pathname might be /CreditCSV/login.html. For root deployment, it's /login.html.
+    // Using endsWith is safer than includes for matching specific pages.
+    const isOnLoginPage = window.location.pathname.endsWith('/login.html');
+    const isOnSignupPage = window.location.pathname.endsWith('/signup.html');
+    // Adjust if deployed in a subdirectory like /CreditCSV/
+    // const isOnLoginPage = window.location.pathname.endsWith('/CreditCSV/login.html');
+    // const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
+
     if (session) {
         // If user is already logged in and on login/signup page, redirect to dashboard
-        if (window.location.pathname.includes('/CreditCSV/login.html') || 
-            window.location.pathname.includes('/CreditCSV/signup.html')) {
-            window.location.href = `${BASE_URL}/dashboard.html`;
+        if (isOnLoginPage || isOnSignupPage) {
+            window.location.href = '/dashboard.html'; // Changed from BASE_URL
         }
     }
 });
@@ -112,28 +125,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('Auth state changed:', event, session);
     
+    const isOnDashboardPage = window.location.pathname.endsWith('/dashboard.html');
+    // Adjust if deployed in a subdirectory like /CreditCSV/
+    // const isOnDashboardPage = window.location.pathname.endsWith('/CreditCSV/dashboard.html');
+
     if (event === 'SIGNED_IN') {
         console.log('User signed in:', session.user);
-        if (!window.location.pathname.includes('/CreditCSV/dashboard.html')) {
-            window.location.href = `${BASE_URL}/dashboard.html`;
+        // Redirect to dashboard if not already there
+        if (!isOnDashboardPage) {
+            window.location.href = '/dashboard.html'; // Changed from BASE_URL
         }
     } else if (event === 'SIGNED_OUT') {
         console.log('User signed out');
         localStorage.removeItem('user');
         localStorage.removeItem('pendingUserData');
-        window.location.href = `${BASE_URL}/login.html`;
+        // Redirect to login page
+        window.location.href = '/login.html'; // Changed from BASE_URL
     }
 });
 
-// Store user data before signup
+// This function is unused. Commenting out.
+/*
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
-
-
-
-
-
-
-
-
+*/
