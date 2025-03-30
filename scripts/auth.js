@@ -3,120 +3,6 @@ function getRedirectUrl() {
     return urlParams.get('redirect') === 'pricing' ? '/pricing.html' : '/dashboard.html';
 }
 
-// Check if user is already logged in
-async function checkAuth() {
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-            console.log('No active session found');
-            return false;
-        }
-
-        if (session) {
-            // If we're on the login page and already authenticated, redirect to dashboard
-            if (window.location.pathname.includes('/login.html') || 
-                window.location.pathname.includes('/signup.html')) {
-                window.location.href = '/dashboard.html';
-            }
-            return true;
-        }
-        
-        return false;
-    } catch (error) {
-        console.log('Auth check failed:', error.message);
-        return false;
-    }
-}
-
-// Check authentication status
-async function checkAuthStatus() {
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-            console.log('No active session');
-            return false;
-        }
-
-        if (session?.user) {
-            console.log('Currently logged in user:', session.user);
-            
-            // Check if user exists in profiles table
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError) {
-                console.log('Profile fetch failed:', profileError.message);
-            } else {
-                console.log('User profile:', profile);
-            }
-            
-            return true;
-        } else {
-            console.log('No user currently logged in');
-            return false;
-        }
-    } catch (error) {
-        console.log('Auth check failed:', error.message);
-        return false;
-    }
-}
-
-// Initialize auth state tracking
-let isAuthenticated = false;
-
-// Add auth state change listener
-supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event);
-    isAuthenticated = !!session;
-    
-    if (event === 'SIGNED_IN') {
-        console.log('User signed in:', session.user);
-        
-        // Try to create profile if it doesn't exist
-        const { data: existingProfile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-            
-        if (!existingProfile) {
-            const userData = JSON.parse(localStorage.getItem('pendingUserData') || '{}');
-            if (userData.full_name) {
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .insert([
-                        {
-                            user_id: session.user.id,
-                            full_name: userData.full_name,
-                            email: userData.email
-                        }
-                    ]);
-                    
-                if (!profileError) {
-                    localStorage.removeItem('pendingUserData');
-                }
-            }
-        }
-        
-        localStorage.setItem('user', JSON.stringify(session.user));
-    } else if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        localStorage.removeItem('user');
-        localStorage.removeItem('pendingUserData');
-    }
-});
-
-// Run auth check when page loads
-document.addEventListener('DOMContentLoaded', async () => {
-    isAuthenticated = await checkAuth();
-    console.log('Initial auth state:', isAuthenticated ? 'Authenticated' : 'Not authenticated');
-});
-
 // Handle login form submission
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -200,11 +86,61 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
     }
 });
 
-// You can call this function on page load
-document.addEventListener('DOMContentLoaded', checkAuthStatus);
+// Add auth state change listener
+supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state changed:', event);
+    
+    if (event === 'SIGNED_IN') {
+        console.log('User signed in:', session.user);
+        
+        // Try to create profile if it doesn't exist
+        const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+            
+        if (!existingProfile) {
+            const userData = JSON.parse(localStorage.getItem('pendingUserData') || '{}');
+            if (userData.full_name) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert([
+                        {
+                            user_id: session.user.id,
+                            full_name: userData.full_name,
+                            email: userData.email
+                        }
+                    ]);
+                    
+                if (!profileError) {
+                    localStorage.removeItem('pendingUserData');
+                }
+            }
+        }
+        
+        localStorage.setItem('user', JSON.stringify(session.user));
+        
+        // Redirect to dashboard if on auth pages
+        if (window.location.pathname.includes('/login.html') || 
+            window.location.pathname.includes('/signup.html')) {
+            window.location.href = getRedirectUrl();
+        }
+    } else if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        localStorage.removeItem('user');
+        localStorage.removeItem('pendingUserData');
+        
+        // Redirect to login page if on protected pages
+        if (window.location.pathname.includes('/dashboard.html')) {
+            window.location.href = '/login.html';
+        }
+    }
+});
 
 // Store user data before signup
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
+
 

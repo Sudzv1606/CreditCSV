@@ -168,6 +168,12 @@ async function processFile(file) {
         // Create download link and trigger download
         downloadCsv(csvData, file.name.replace('.pdf', '.csv'));
         
+        // Update conversion count in database
+        await updateConversionCount();
+        
+        // Update dashboard if we're on the same domain
+        updateDashboardStats();
+        
         // Clear sensitive data from memory
         clearSensitiveData(file, csvData);
         
@@ -301,4 +307,50 @@ function createNotification(message, type) {
     notification.className = `notification ${type}`;
     notification.textContent = message;
     return notification;
-} 
+}
+
+async function updateConversionCount() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // First, get current count
+        const { data: currentData, error: fetchError } = await supabase
+            .from('conversions')
+            .select('count')
+            .eq('user_id', user.id)
+            .gte('created_at', new Date(new Date().setDate(1)).toISOString())
+            .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows found
+            throw fetchError;
+        }
+
+        if (currentData) {
+            // Update existing record
+            await supabase
+                .from('conversions')
+                .update({ count: currentData.count + 1 })
+                .eq('user_id', user.id)
+                .gte('created_at', new Date(new Date().setDate(1)).toISOString());
+        } else {
+            // Create new record
+            await supabase
+                .from('conversions')
+                .insert([{ 
+                    user_id: user.id,
+                    count: 1,
+                    created_at: new Date().toISOString()
+                }]);
+        }
+    } catch (error) {
+        console.error('Failed to update conversion count:', error);
+    }
+}
+
+function updateDashboardStats() {
+    // Update dashboard stats if the dashboard is open
+    if (window.updateUsageStats) {
+        window.updateUsageStats();
+    }
+}
