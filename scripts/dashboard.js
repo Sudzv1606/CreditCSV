@@ -1,4 +1,4 @@
-const BASE_URL = 'https://sudzv1606.github.io';
+const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -134,6 +134,7 @@ document.getElementById('resumeCheckoutBtn')?.addEventListener('click', () => {
 
 // Make updateUsageStats available globally
 window.updateUsageStats = updateUsageStats;
+
 
 
 

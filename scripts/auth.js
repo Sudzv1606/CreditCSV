@@ -1,4 +1,4 @@
-const BASE_URL = 'https://sudzv1606.github.io';
+const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 function getRedirectUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -27,7 +27,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         // Store user data
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Redirect to dashboard with full URL
+        // Redirect to dashboard with correct URL
         window.location.href = `${BASE_URL}/dashboard.html`;
         
     } catch (error) {
@@ -79,7 +79,7 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
             // Store user data
             localStorage.setItem('user', JSON.stringify(authData.user));
             
-            // Redirect to dashboard with full URL
+            // Redirect to dashboard with correct URL
             window.location.href = `${BASE_URL}/dashboard.html`;
         }
     } catch (error) {
@@ -121,6 +121,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
+
 
 
 

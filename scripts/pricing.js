@@ -12,6 +12,8 @@ async function checkAuthStatus() {
     }
 }
 
+const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
+
 // Handle premium subscription button click
 document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
     
     if (!isAuthenticated) {
         // If not authenticated, redirect to signup page
-        window.location.href = '/signup.html?redirect=pricing';
+        window.location.href = `${BASE_URL}/signup.html?redirect=pricing`;
         return;
     }
 
@@ -45,7 +47,7 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
         }
 
         // Redirect to checkout page
-        window.location.href = '/checkout.html';
+        window.location.href = `${BASE_URL}/checkout.html`;
 
     } catch (error) {
         console.error('Subscription check failed:', error);
