@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CreditCSV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="/" class="logo">
+                <span class="logo-icon">📄</span>
+                CreditCSV
+            </a>
+            <div class="nav-links">
+                <a href="#" id="userMenuBtn" class="user-menu">
+                    <span class="user-initial"></span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main dashboard">
+        <div class="container">
+            <!-- Usage Stats Section -->
+            <section class="usage-stats">
+                <div class="usage-card">
+                    <h2>Your Usage This Month</h2>
+                    <div class="usage-meter">
+                        <div class="progress-bar">
+                            <div class="progress" id="usageProgress"></div>
+                        </div>
+                        <p class="usage-text"><span id="currentUsage">0</span>/<span id="maxUsage">10</span> conversions</p>
+                    </div>
+                    <p class="usage-warning" id="usageWarning"></p>
+                </div>
+            </section>
+
+            <!-- Plan Comparison Section -->
+            <section class="plans-comparison">
+                <h2>Upgrade to Premium</h2>
+                <div class="plans-grid">
+                    <div class="plan-card">
+                        <div class="plan-header">
+                            <h3>Free</h3>
+                            <div class="price">
+                                <span class="amount">$0</span>
+                                <span class="period">/month</span>
+                            </div>
+                        </div>
+                        <ul class="plan-features">
+                            <li>✓ 10 pages per month</li>
+                            <li>✓ Basic format support</li>
+                            <li>✓ Standard conversion speed</li>
+                            <li>✓ Email support</li>
+                        </ul>
+                        <p class="current-plan">Your Current Plan</p>
+                    </div>
+
+                    <div class="plan-card premium">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="plan-header">
+                            <h3>Premium</h3>
+                            <div class="price">
+                                <span class="amount">$12</span>
+                                <span class="period">/month</span>
+                            </div>
+                        </div>
+                        <ul class="plan-features">
+                            <li>✓ Unlimited conversions</li>
+                            <li>✓ All formats supported</li>
+                            <li>✓ Priority conversion speed</li>
+                            <li>✓ Priority support</li>
+                            <li>✓ Batch processing</li>
+                        </ul>
+                        <button id="upgradeBtn" class="upgrade-button">
+                            Upgrade Now
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Abandoned Cart Banner -->
+        <div id="cartBanner" class="cart-banner" style="display: none;">
+            <div class="banner-content">
+                <p>Your Premium plan is waiting! Complete your purchase in 1 click</p>
+                <button id="resumeCheckoutBtn" class="resume-button">
+                    Resume Checkout
+                    <img src="assets/icons/lock.svg" alt="Secure" class="secure-icon">
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="scripts/supabase.js"></script>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>
+
+
