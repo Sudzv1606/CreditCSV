@@ -217,15 +217,13 @@ function checkAbandonedCheckout() {
     }
 }
 
-function initializeUserMenu(user) {
+function updateUserInfoDisplay(user) {
     const userInitialElement = document.querySelector('.user-initial');
-    const userMenuBtn = document.getElementById('userMenuBtn');
-    const userDropdown = document.getElementById('userDropdown');
     const userEmailDisplay = document.getElementById('userEmailDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    if (!userInitialElement || !userMenuBtn || !userDropdown || !userEmailDisplay || !logoutBtn) {
-        console.error('User menu elements not found.');
+    if (!userInitialElement || !userEmailDisplay || !logoutBtn) {
+        console.error('User info elements not found.');
         return;
     }
 
@@ -238,17 +236,7 @@ function initializeUserMenu(user) {
         userEmailDisplay.textContent = 'No email found';
     }
 
-    // Toggle dropdown visibility - explicit add/remove class
-    userMenuBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        if (userDropdown.classList.contains('show')) {
-            userDropdown.classList.remove('show');
-        } else {
-            userDropdown.classList.add('show');
-        }
-    });
-
-    // Handle logout
+    // Handle logout - keep the logout logic as is
     logoutBtn.addEventListener('click', async () => {
         try {
             const { error } = await supabase.auth.signOut();
@@ -258,14 +246,6 @@ function initializeUserMenu(user) {
         } catch (error) {
             console.error('Logout failed:', error);
             alert('Logout failed. Please try again.');
-        }
-    });
-
-    // Close dropdown if clicked outside the user menu container
-    const userMenuContainer = document.querySelector('.user-menu-container');
-    document.addEventListener('click', (event) => {
-        if (userMenuContainer && !userMenuContainer.contains(event.target)) {
-            userDropdown.classList.remove('show');
         }
     });
 }
