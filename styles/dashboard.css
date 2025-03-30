@@ -10,6 +10,75 @@
     z-index: 0; /* Reduce z-index to prevent conflicts with menu */
 }
 
+/* User Menu Dropdown Styles */
+.user-menu-container {
+    position: relative; /* Needed for absolute positioning of dropdown */
+}
+
+.user-menu-button {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0.5rem; /* Add some padding for easier clicking */
+    border-radius: 50%;
+    background-color: var(--background-color); /* Match theme */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.user-initial {
+    font-size: 1rem;
+}
+
+.user-dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the button */
+    right: 0;
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    min-width: 200px; /* Adjust as needed */
+    z-index: 1001; /* Ensure it's above other content */
+}
+
+.user-dropdown.show {
+    display: block; /* Show when class is added */
+}
+
+.dropdown-email {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+    word-break: break-all; /* Prevent long emails from overflowing */
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-logout-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    width: 100%;
+    text-align: left;
+    transition: color 0.2s;
+}
+
+.dropdown-logout-btn:hover {
+    color: var(--primary-hover);
+}
+
 .usage-card {
     background: #fff;
     border-radius: 12px;
@@ -260,6 +329,3 @@
         text-align: center;
     }
 }
-
-
-
