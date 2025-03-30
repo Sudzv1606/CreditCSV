@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Check for abandoned checkout
         checkAbandonedCheckout();
         
-        // Set up real-time subscription for usage updates
-        supabase
+        // Remove real-time subscription for usage updates as it's based on the non-existent conversions table
+        /* supabase
             .channel('conversions')
             .on('postgres_changes', {
                 event: '*',
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 updateUsageStats();
             })
             .subscribe();
+        */
 
     } catch (error) {
         console.error('Dashboard initialization error:', error);
@@ -139,8 +140,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Check for abandoned checkout
         checkAbandonedCheckout();
         
-        // Set up real-time subscription for usage updates
-        supabase
+        // Remove real-time subscription for usage updates as it's based on the non-existent conversions table
+        /* supabase
             .channel('conversions')
             .on('postgres_changes', {
                 event: '*',
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 updateUsageStats();
             })
             .subscribe();
+        */
 
     } catch (error) {
         console.error('Dashboard initialization error:', error);

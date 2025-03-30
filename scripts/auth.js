@@ -153,10 +153,8 @@ function initializeAuth() {
             console.log('User signed out');
             localStorage.removeItem('user');
             localStorage.removeItem('pendingUserData'); // Clear any pending data
-            // Only redirect if not already on an auth page
-            if (!isOnLoginPage && !isOnSignupPage) {
-                 window.location.href = '/CreditCSV/login.html'; // Use path relative to domain root
-            }
+            // Redirect to homepage after logout
+            window.location.href = '/CreditCSV/index.html';
         }
     });
 
