@@ -25,9 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         console.log('Dashboard initialized for user:', user.email);
+        console.log("User object:", user); // ADDED LOGGING
 
-        // Initialize user menu
-        initializeUserMenu(user);
+        // Initialize user info display
+        updateUserInfoDisplay(user);
         
         // Initialize usage stats
         await updateUsageStats();
