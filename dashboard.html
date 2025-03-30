@@ -18,9 +18,15 @@
                 CreditCSV
             </a>
             <div class="nav-links">
-                <a href="#" id="userMenuBtn" class="user-menu">
-                    <span class="user-initial"></span>
-                </a>
+                <div class="user-menu-container"> <!-- Added container for positioning -->
+                    <a href="#" id="userMenuBtn" class="user-menu-button">
+                        <span class="user-initial"></span>
+                    </a>
+                    <div id="userDropdown" class="user-dropdown">
+                        <div id="userEmailDisplay" class="dropdown-email"></div>
+                        <button id="logoutBtn" class="dropdown-logout-btn">Logout</button>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -92,7 +98,7 @@
                 <p>Your Premium plan is waiting! Complete your purchase in 1 click</p>
                 <button id="resumeCheckoutBtn" class="resume-button">
                     Resume Checkout
-                    <img src="assets/icons/lock.svg" alt="Secure" class="secure-icon">
+                    <!-- Removed broken image link: <img src="assets/icons/lock.svg" alt="Secure" class="secure-icon"> -->
                 </button>
             </div>
         </div>
@@ -103,5 +109,3 @@
     <script src="scripts/dashboard.js"></script>
 </body>
 </html>
-
-
