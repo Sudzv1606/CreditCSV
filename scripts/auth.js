@@ -102,13 +102,13 @@ function initializeAuth() {
 
                     // Redirect to dashboard
                     // No need to explicitly get session here, signup implies session creation
-                     console.log('Redirecting to dashboard after signup...');
+                    console.log('Redirecting to dashboard after signup...');
                     window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
-
+                    return; // Prevent further execution in this function
                 } else {
-                     console.error('Signup successful but no user data returned.');
-                     errorMessage.style.display = 'block';
-                     errorMessage.textContent = 'Signup completed, but failed to retrieve user details. Please try logging in.';
+                    console.error('Signup successful but no user data returned.');
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Signup completed, but failed to retrieve user details. Please try logging in.';
                 }
 
             } catch (error) {
@@ -148,10 +148,8 @@ function initializeAuth() {
         const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
 
         // Add a check for session and user data before redirecting
-        if (event === 'SIGNED_IN' && session && session.user && !isOnDashboardPage) {
-            console.log('User signed in, redirecting to dashboard.');
-            window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
-        } else if (event === 'SIGNED_OUT') {
+        // Remove the SIGNED_IN redirect logic as it's now handled directly after signup
+        if (event === 'SIGNED_OUT') {
             console.log('User signed out');
             localStorage.removeItem('user');
             localStorage.removeItem('pendingUserData'); // Clear any pending data
