@@ -1,18 +1,35 @@
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Check authentication
+        // First check if we have a session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+        
+        if (!session) {
+            console.log('No session found');
+            window.location.href = '/login.html';
+            return;
+        }
+
+        // Get current user
         const { data: { user }, error } = await supabase.auth.getUser();
+        
         if (error || !user) {
             console.log('No authenticated user found');
             window.location.href = '/login.html';
             return;
         }
 
+        console.log('Dashboard initialized for user:', user.email);
+
         // Initialize user menu
         initializeUserMenu(user);
         
         // Initialize usage stats
         await updateUsageStats();
+        
+        // Check for abandoned checkout
+        checkAbandonedCheckout();
         
         // Set up real-time subscription for usage updates
         supabase
@@ -88,13 +105,18 @@ function checkAbandonedCheckout() {
 
 function initializeUserMenu(user) {
     const userInitial = document.querySelector('.user-initial');
-    userInitial.textContent = user.email[0].toUpperCase();
+    if (userInitial && user.email) {
+        userInitial.textContent = user.email[0].toUpperCase();
+    }
     
     // Add dropdown menu
     const userMenu = document.getElementById('userMenuBtn');
-    userMenu.addEventListener('click', () => {
-        // Toggle dropdown menu
-    });
+    if (userMenu) {
+        userMenu.addEventListener('click', () => {
+            // Toggle dropdown menu
+            // Add your dropdown menu logic here
+        });
+    }
 }
 
 // Handle upgrade button click
@@ -110,5 +132,6 @@ document.getElementById('resumeCheckoutBtn')?.addEventListener('click', () => {
 
 // Make updateUsageStats available globally
 window.updateUsageStats = updateUsageStats;
+
 
 

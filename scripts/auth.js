@@ -21,7 +21,13 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         if (error) throw error;
         
         console.log('Login successful:', data);
-        window.location.href = getRedirectUrl();
+        
+        // Store user data
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Redirect to dashboard
+        window.location.href = '/dashboard.html';
+        
     } catch (error) {
         console.error('Login error:', error);
         errorMessage.style.display = 'block';
@@ -42,7 +48,12 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
         
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
-            password
+            password,
+            options: {
+                data: {
+                    full_name: name
+                }
+            }
         });
 
         if (authError) throw authError;
@@ -50,34 +61,24 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
         console.log('Signup successful:', authData);
 
         if (authData.user) {
-            // Wait for the session to be established
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            
-            if (sessionError) throw sessionError;
-            
-            if (session) {
-                // Create profile
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .insert([
-                        {
-                            user_id: authData.user.id,
-                            full_name: name,
-                            email: email
-                        }
-                    ]);
+            // Create profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .insert([
+                    {
+                        user_id: authData.user.id,
+                        full_name: name,
+                        email: email
+                    }
+                ]);
 
-                if (profileError) throw profileError;
-                
-                console.log('Profile created successfully');
-            }
-
-            // Redirect based on email verification status
-            if (authData.user.confirmationSentAt) {
-                window.location.href = '/email-verification.html';
-            } else {
-                window.location.href = getRedirectUrl();
-            }
+            if (profileError) throw profileError;
+            
+            // Store user data
+            localStorage.setItem('user', JSON.stringify(authData.user));
+            
+            // Redirect to dashboard
+            window.location.href = '/dashboard.html';
         }
     } catch (error) {
         console.error('Signup error:', error);
@@ -86,45 +87,62 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
     }
 });
 
+// Check if user is already logged in
+document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        // If user is already logged in and on login/signup page, redirect to dashboard
+        if (window.location.pathname.includes('/login.html') || 
+            window.location.pathname.includes('/signup.html')) {
+            window.location.href = '/dashboard.html';
+        }
+    }
+});
+
 // Add auth state change listener
 supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event);
+    console.log('Auth state changed:', event, session);
     
     if (event === 'SIGNED_IN') {
         console.log('User signed in:', session.user);
         
-        // Try to create profile if it doesn't exist
-        const { data: existingProfile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-            
-        if (!existingProfile) {
-            const userData = JSON.parse(localStorage.getItem('pendingUserData') || '{}');
-            if (userData.full_name) {
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .insert([
-                        {
-                            user_id: session.user.id,
-                            full_name: userData.full_name,
-                            email: userData.email
-                        }
-                    ]);
-                    
-                if (!profileError) {
-                    localStorage.removeItem('pendingUserData');
+        try {
+            // Try to create profile if it doesn't exist
+            const { data: existingProfile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .single();
+                
+            if (!existingProfile) {
+                const userData = JSON.parse(localStorage.getItem('pendingUserData') || '{}');
+                if (userData.full_name) {
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert([
+                            {
+                                user_id: session.user.id,
+                                full_name: userData.full_name,
+                                email: userData.email
+                            }
+                        ]);
+                        
+                    if (!profileError) {
+                        localStorage.removeItem('pendingUserData');
+                    }
                 }
             }
-        }
-        
-        localStorage.setItem('user', JSON.stringify(session.user));
-        
-        // Redirect to dashboard if on auth pages
-        if (window.location.pathname.includes('/login.html') || 
-            window.location.pathname.includes('/signup.html')) {
-            window.location.href = getRedirectUrl();
+            
+            localStorage.setItem('user', JSON.stringify(session.user));
+            
+            // Only redirect if on auth pages
+            if (window.location.pathname.includes('/login.html') || 
+                window.location.pathname.includes('/signup.html')) {
+                window.location.href = getRedirectUrl();
+            }
+        } catch (error) {
+            console.error('Error during auth state change:', error);
         }
     } else if (event === 'SIGNED_OUT') {
         console.log('User signed out');
@@ -142,5 +160,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
+
+
 
 
