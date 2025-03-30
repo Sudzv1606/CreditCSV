@@ -18,15 +18,11 @@
                 CreditCSV
             </a>
             <div class="nav-links">
-                <div class="user-menu-container"> <!-- Added container for positioning -->
-                    <a href="#" id="userMenuBtn" class="user-menu-button">
-                        <span class="user-initial"></span>
-                    </a>
-                    <div id="userDropdown" class="user-dropdown">
-                        <div id="userEmailDisplay" class="dropdown-email"></div>
-                        <button id="logoutBtn" class="dropdown-logout-btn">Logout</button>
-                    </div>
+                <div id="userInfoDisplay" style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="user-initial" style="font-size: 1.2rem; font-weight: 600;"></span>
+                    <span id="userEmailDisplay" style="font-size: 1rem; color: #666;"></span>
                 </div>
+                <button id="logoutBtn" class="signup-btn" style="margin-left: 1rem;">Logout</button>
             </div>
         </nav>
     </header>
