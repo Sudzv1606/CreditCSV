@@ -1,152 +1,174 @@
-// Base URL is removed as we will use relative paths for navigation.
-// const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
+// Function to initialize all authentication-related logic
+function initializeAuth() {
+    console.log("Attempting to initialize Auth Logic...");
 
-// This function is unused and relies on the removed BASE_URL. Commenting out.
-/*
-function getRedirectUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    // Using relative paths now
-    return urlParams.get('redirect') === 'pricing' ? '/pricing.html' : '/dashboard.html';
-}
-*/
-
-// Handle login form submission
-document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('errorMessage');
-
-    try {
-        console.log('Attempting login for:', email);
-        
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) throw error;
-        
-        console.log('Login successful:', data);
-        
-        // Store user data
-        localStorage.setItem('user', JSON.stringify(data.user));
-
-        // Redirect to dashboard using a relative path
-        window.location.href = '/dashboard.html'; // Changed from BASE_URL
-
-    } catch (error) {
-        console.error('Login error:', error);
-        errorMessage.style.display = 'block';
-        errorMessage.textContent = error.message;
+    // Ensure supabase client is available
+    if (!window.supabase) {
+        console.error("Supabase client not ready in initializeAuth. Aborting.");
+        return;
     }
-});
+    console.log("Supabase client found. Proceeding with auth initialization.");
 
-// Handle signup form submission
-document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('errorMessage');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
 
-    try {
-        console.log('Attempting signup for:', email);
-        
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    full_name: name
-                }
+    // --- Event Listeners ---
+
+    // Handle login form submission
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none'; // Hide previous errors
+
+            try {
+                console.log('Attempting login for:', email);
+                const { data, error } = await window.supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                console.log('Login successful:', data);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = '/dashboard.html'; // Use relative path
+
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
             }
         });
+    }
 
-        if (authError) throw authError;
-        
-        console.log('Signup successful:', authData);
+    // Handle signup form submission
+    if (signupForm) {
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none'; // Hide previous errors
 
-        if (authData.user) {
-            // Create profile
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .insert([
-                    {
-                        user_id: authData.user.id,
-                        full_name: name,
-                        email: email
+            try {
+                console.log('Attempting signup for:', email);
+                const { data: authData, error: authError } = await window.supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: name
+                        }
                     }
-                ]);
+                });
 
-            if (profileError) throw profileError;
-            
-            // Store user data
-            localStorage.setItem('user', JSON.stringify(authData.user));
-            
-            // Set session explicitly
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) throw sessionError;
-            
-            if (session) {
-                // Redirect to dashboard using a relative path
-                window.location.href = '/dashboard.html'; // Changed from BASE_URL
+                if (authError) throw authError;
+
+                console.log('Signup successful, user data:', authData.user);
+
+                // Check if user object exists before proceeding
+                if (authData.user) {
+                    // Create profile (handle potential errors)
+                    try {
+                        const { error: profileError } = await window.supabase
+                            .from('profiles')
+                            .insert([
+                                {
+                                    user_id: authData.user.id,
+                                    full_name: name,
+                                    email: email // Ensure email is included if needed in profile
+                                }
+                            ]);
+
+                        if (profileError) {
+                            // Log profile error but continue, as user is already signed up
+                            console.error('Profile creation error:', profileError);
+                            // Optionally inform the user or attempt retry later
+                        } else {
+                             console.log('Profile created successfully for user:', authData.user.id);
+                        }
+
+                    } catch (profileCatchError) {
+                         console.error('Caught profile creation exception:', profileCatchError);
+                    }
+
+
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify(authData.user));
+
+                    // Redirect to dashboard
+                    // No need to explicitly get session here, signup implies session creation
+                     console.log('Redirecting to dashboard after signup...');
+                    window.location.href = '/dashboard.html'; // Use relative path
+
+                } else {
+                     console.error('Signup successful but no user data returned.');
+                     errorMessage.style.display = 'block';
+                     errorMessage.textContent = 'Signup completed, but failed to retrieve user details. Please try logging in.';
+                }
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = error.message || 'Signup failed. Please try again.';
+            }
+        });
+    }
+
+    // --- Initial Checks and State Listener ---
+
+    // Check session on initial load (after DOM is ready)
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const { data: { session } } = await window.supabase.auth.getSession();
+
+            const isOnLoginPage = window.location.pathname.endsWith('/login.html');
+            const isOnSignupPage = window.location.pathname.endsWith('/signup.html');
+
+            if (session && (isOnLoginPage || isOnSignupPage)) {
+                console.log('User already logged in, redirecting from auth page to dashboard.');
+                window.location.href = '/dashboard.html';
+            }
+        } catch (error) {
+            console.error("Error checking initial session:", error);
+        }
+    });
+
+    // Add auth state change listener
+    window.supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log('Auth state changed:', event, session);
+        const isOnDashboardPage = window.location.pathname.endsWith('/dashboard.html');
+
+        if (event === 'SIGNED_IN' && !isOnDashboardPage) {
+            console.log('User signed in, redirecting to dashboard.');
+            window.location.href = '/dashboard.html';
+        } else if (event === 'SIGNED_OUT') {
+            console.log('User signed out, redirecting to login.');
+            localStorage.removeItem('user');
+            localStorage.removeItem('pendingUserData'); // Clear any pending data
+            // Only redirect if not already on an auth page
+            if (!window.location.pathname.endsWith('/login.html') && !window.location.pathname.endsWith('/signup.html')) {
+                 window.location.href = '/login.html';
             }
         }
-    } catch (error) {
-        console.error('Signup error:', error);
-        errorMessage.style.display = 'block';
-        errorMessage.textContent = error.message;
+    });
+
+} // --- End of initializeAuth function ---
+
+
+// --- Wait for Supabase client ---
+// Use an interval to check if window.supabase is available before initializing
+const checkSupabaseAuthInterval = setInterval(() => {
+    // Check for the supabase object AND the createClient function specifically
+    if (typeof window.supabase !== 'undefined' && typeof window.supabase.auth !== 'undefined') {
+        console.log("Supabase client (auth) is ready. Initializing auth logic.");
+        clearInterval(checkSupabaseAuthInterval);
+        initializeAuth(); // Call the initialization function
+    } else {
+        console.log("Waiting for Supabase client (auth)...");
     }
-});
-
-// Check if user is already logged in
-document.addEventListener('DOMContentLoaded', async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    // Determine the base path dynamically if needed, or assume root relative paths work.
-    // For GitHub Pages, pathname might be /CreditCSV/login.html. For root deployment, it's /login.html.
-    // Using endsWith is safer than includes for matching specific pages.
-    const isOnLoginPage = window.location.pathname.endsWith('/login.html');
-    const isOnSignupPage = window.location.pathname.endsWith('/signup.html');
-    // Adjust if deployed in a subdirectory like /CreditCSV/
-    // const isOnLoginPage = window.location.pathname.endsWith('/CreditCSV/login.html');
-    // const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
-
-    if (session) {
-        // If user is already logged in and on login/signup page, redirect to dashboard
-        if (isOnLoginPage || isOnSignupPage) {
-            window.location.href = '/dashboard.html'; // Changed from BASE_URL
-        }
-    }
-});
-
-// Add auth state change listener
-supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth state changed:', event, session);
-    
-    const isOnDashboardPage = window.location.pathname.endsWith('/dashboard.html');
-    // Adjust if deployed in a subdirectory like /CreditCSV/
-    // const isOnDashboardPage = window.location.pathname.endsWith('/CreditCSV/dashboard.html');
-
-    if (event === 'SIGNED_IN') {
-        console.log('User signed in:', session.user);
-        // Redirect to dashboard if not already there
-        if (!isOnDashboardPage) {
-            window.location.href = '/dashboard.html'; // Changed from BASE_URL
-        }
-    } else if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        localStorage.removeItem('user');
-        localStorage.removeItem('pendingUserData');
-        // Redirect to login page
-        window.location.href = '/login.html'; // Changed from BASE_URL
-    }
-});
-
-// This function is unused. Commenting out.
-/*
-function storePendingUserData(name, email) {
-    localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
-}
-*/
+}, 100); // Check every 100ms
