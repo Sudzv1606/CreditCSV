@@ -340,35 +340,32 @@ async function updateConversionCount() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // First, get current count
-        const { data: currentData, error: fetchError } = await supabase
-            .from('conversions')
-            .select('count')
+        // Update conversion count in the profiles table
+        const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('conversion_count')
             .eq('user_id', user.id)
-            .gte('created_at', new Date(new Date().setDate(1)).toISOString())
             .single();
 
-        if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows found
-            throw fetchError;
+        if (profileError) {
+            console.error('Failed to fetch profile data:', profileError);
+            return;
         }
 
-        if (currentData) {
-            // Update existing record
-            await supabase
-                .from('conversions')
-                .update({ count: currentData.count + 1 })
-                .eq('user_id', user.id)
-                .gte('created_at', new Date(new Date().setDate(1)).toISOString());
+        const currentCount = profileData ? profileData.conversion_count : 0;
+        const newCount = currentCount + 1;
+
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ conversion_count: newCount })
+            .eq('user_id', user.id);
+
+        if (updateError) {
+            console.error('Failed to update conversion count in profiles table:', updateError);
         } else {
-            // Create new record
-            await supabase
-                .from('conversions')
-                .insert([{ 
-                    user_id: user.id,
-                    count: 1,
-                    created_at: new Date().toISOString()
-                }]);
+            console.log('Conversion count updated successfully for user:', user.id, 'New count:', newCount);
         }
+
     } catch (error) {
         console.error('Failed to update conversion count:', error);
     }
