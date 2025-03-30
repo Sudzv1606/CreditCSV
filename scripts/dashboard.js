@@ -238,10 +238,14 @@ function initializeUserMenu(user) {
         userEmailDisplay.textContent = 'No email found';
     }
 
-    // Toggle dropdown visibility
+    // Toggle dropdown visibility - explicit add/remove class
     userMenuBtn.addEventListener('click', (e) => {
         e.preventDefault(); // Prevent default link behavior
-        userDropdown.classList.toggle('show');
+        if (userDropdown.classList.contains('show')) {
+            userDropdown.classList.remove('show');
+        } else {
+            userDropdown.classList.add('show');
+        }
     });
 
     // Handle logout
@@ -249,8 +253,8 @@ function initializeUserMenu(user) {
         try {
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
-            // onAuthStateChange listener in auth.js should handle the redirect
             console.log('User logged out successfully.');
+            window.location.href = '/CreditCSV/index.html'; // Explicitly redirect to homepage
         } catch (error) {
             console.error('Logout failed:', error);
             alert('Logout failed. Please try again.');
