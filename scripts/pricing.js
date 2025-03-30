@@ -23,7 +23,7 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
     
     if (!isAuthenticated) {
         // Redirect to signup using a relative path, keeping the redirect parameter
-        window.location.href = '/signup.html?redirect=pricing'; // Changed from BASE_URL
+        window.location.href = '/CreditCSV/signup.html?redirect=pricing'; // Changed from BASE_URL
         return;
     }
 

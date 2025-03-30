@@ -34,7 +34,7 @@ function initializeAuth() {
 
                 console.log('Login successful:', data);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = '/dashboard.html'; // Use relative path
+                window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -103,7 +103,7 @@ function initializeAuth() {
                     // Redirect to dashboard
                     // No need to explicitly get session here, signup implies session creation
                      console.log('Redirecting to dashboard after signup...');
-                    window.location.href = '/dashboard.html'; // Use relative path
+                    window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
 
                 } else {
                      console.error('Signup successful but no user data returned.');
@@ -126,12 +126,13 @@ function initializeAuth() {
         try {
             const { data: { session } } = await window.supabase.auth.getSession();
 
-            const isOnLoginPage = window.location.pathname.endsWith('/login.html');
-            const isOnSignupPage = window.location.pathname.endsWith('/signup.html');
+            // Adjust path checking for subdirectory
+            const isOnLoginPage = window.location.pathname.endsWith('/CreditCSV/login.html');
+            const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
 
             if (session && (isOnLoginPage || isOnSignupPage)) {
                 console.log('User already logged in, redirecting from auth page to dashboard.');
-                window.location.href = '/dashboard.html';
+                window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
             }
         } catch (error) {
             console.error("Error checking initial session:", error);
@@ -141,18 +142,22 @@ function initializeAuth() {
     // Add auth state change listener
     window.supabase.auth.onAuthStateChange(async (event, session) => {
         console.log('Auth state changed:', event, session);
-        const isOnDashboardPage = window.location.pathname.endsWith('/dashboard.html');
+        // Adjust path checking for subdirectory
+        const isOnDashboardPage = window.location.pathname.endsWith('/CreditCSV/dashboard.html');
+        const isOnLoginPage = window.location.pathname.endsWith('/CreditCSV/login.html');
+        const isOnSignupPage = window.location.pathname.endsWith('/CreditCSV/signup.html');
+
 
         if (event === 'SIGNED_IN' && !isOnDashboardPage) {
             console.log('User signed in, redirecting to dashboard.');
-            window.location.href = '/dashboard.html';
+            window.location.href = '/CreditCSV/dashboard.html'; // Use path relative to domain root
         } else if (event === 'SIGNED_OUT') {
             console.log('User signed out, redirecting to login.');
             localStorage.removeItem('user');
             localStorage.removeItem('pendingUserData'); // Clear any pending data
             // Only redirect if not already on an auth page
-            if (!window.location.pathname.endsWith('/login.html') && !window.location.pathname.endsWith('/signup.html')) {
-                 window.location.href = '/login.html';
+            if (!isOnLoginPage && !isOnSignupPage) {
+                 window.location.href = '/CreditCSV/login.html'; // Use path relative to domain root
             }
         }
     });

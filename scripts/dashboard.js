@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (!session) {
             console.log('No session found, redirecting to login');
-            window.location.href = '/login.html'; // Changed from BASE_URL
+            window.location.href = '/CreditCSV/login.html'; // Use path relative to domain root
             return;
         }
 
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!user) {
             console.log('No authenticated user found');
-            window.location.href = '/login.html'; // Changed from BASE_URL
+            window.location.href = '/CreditCSV/login.html'; // Use path relative to domain root
             return;
         }
 
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Dashboard initialization error:', error);
         // Redirect to login on auth/session errors
         if (error.message?.includes('auth') || error.message?.includes('session')) {
-            window.location.href = '/login.html'; // Changed from BASE_URL
+            window.location.href = '/CreditCSV/login.html'; // Use path relative to domain root
         }
     }
 });
