@@ -2,7 +2,7 @@ const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 function getRedirectUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('redirect') === 'pricing' ? '/pricing.html' : '/dashboard.html';
+    return urlParams.get('redirect') === 'pricing' ? `${BASE_URL}/pricing.html` : `${BASE_URL}/dashboard.html`;
 }
 
 // Handle login form submission
@@ -79,8 +79,14 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
             // Store user data
             localStorage.setItem('user', JSON.stringify(authData.user));
             
-            // Redirect to dashboard with correct URL
-            window.location.href = `${BASE_URL}/dashboard.html`;
+            // Set session explicitly
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) throw sessionError;
+            
+            if (session) {
+                // Redirect to dashboard with correct URL
+                window.location.href = `${BASE_URL}/dashboard.html`;
+            }
         }
     } catch (error) {
         console.error('Signup error:', error);
@@ -95,8 +101,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (session) {
         // If user is already logged in and on login/signup page, redirect to dashboard
-        if (window.location.pathname.includes('/login.html') || 
-            window.location.pathname.includes('/signup.html')) {
+        if (window.location.pathname.includes('/CreditCSV/login.html') || 
+            window.location.pathname.includes('/CreditCSV/signup.html')) {
             window.location.href = `${BASE_URL}/dashboard.html`;
         }
     }
@@ -108,7 +114,9 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     
     if (event === 'SIGNED_IN') {
         console.log('User signed in:', session.user);
-        window.location.href = `${BASE_URL}/dashboard.html`;
+        if (!window.location.pathname.includes('/CreditCSV/dashboard.html')) {
+            window.location.href = `${BASE_URL}/dashboard.html`;
+        }
     } else if (event === 'SIGNED_OUT') {
         console.log('User signed out');
         localStorage.removeItem('user');
@@ -121,6 +129,8 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 function storePendingUserData(name, email) {
     localStorage.setItem('pendingUserData', JSON.stringify({ full_name: name, email }));
 }
+
+
 
 
 

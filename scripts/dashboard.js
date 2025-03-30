@@ -2,21 +2,22 @@ const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // First check if we have a session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) throw sessionError;
         
         if (!session) {
-            console.log('No session found');
+            console.log('No session found, redirecting to login');
             window.location.href = `${BASE_URL}/login.html`;
             return;
         }
 
         // Get current user
-        const { data: { user }, error } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (error || !user) {
+        if (userError) throw userError;
+
+        if (!user) {
             console.log('No authenticated user found');
             window.location.href = `${BASE_URL}/login.html`;
             return;
@@ -45,9 +46,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 updateUsageStats();
             })
             .subscribe();
+
     } catch (error) {
         console.error('Dashboard initialization error:', error);
-        window.location.href = `${BASE_URL}/login.html`;
+        if (error.message?.includes('auth') || error.message?.includes('session')) {
+            window.location.href = `${BASE_URL}/login.html`;
+        }
     }
 });
 
@@ -134,6 +138,8 @@ document.getElementById('resumeCheckoutBtn')?.addEventListener('click', () => {
 
 // Make updateUsageStats available globally
 window.updateUsageStats = updateUsageStats;
+
+
 
 
 

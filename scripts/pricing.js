@@ -18,11 +18,9 @@ const BASE_URL = 'https://sudzv1606.github.io/CreditCSV';
 document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     
-    // First check if user is authenticated
     await checkAuthStatus();
     
     if (!isAuthenticated) {
-        // If not authenticated, redirect to signup page
         window.location.href = `${BASE_URL}/signup.html?redirect=pricing`;
         return;
     }
@@ -57,3 +55,4 @@ document.getElementById('goPremiumBtn').addEventListener('click', async (e) => {
 
 // Run auth check when page loads
 checkAuthStatus();
+
